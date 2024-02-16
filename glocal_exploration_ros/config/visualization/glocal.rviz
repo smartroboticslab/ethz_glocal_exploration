@@ -71,7 +71,7 @@ Visualization Manager:
       Length: 0.5
       Name: Drone drifting
       Radius: 0.30000001192092896
-      Reference Frame: airsim_drone
+      Reference Frame: gt_body
       Value: true
     - Class: rviz/Axes
       Enabled: false
