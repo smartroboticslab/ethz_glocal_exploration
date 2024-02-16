@@ -54,7 +54,7 @@ class RHRRTStarVisualizer : public LocalPlannerVisualizerBase {
   ros::Publisher path_pub_;
 
   // Variables.
-  const std::string frame_id_ = "mission";
+  const std::string frame_id_ = "world";
   ros::Time timestamp_;
   int executed_path_id_ = 0;
 };
