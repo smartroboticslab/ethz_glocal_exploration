@@ -3,6 +3,8 @@
 #include <memory>
 
 #include <geometry_msgs/Pose.h>
+#include <mav_interface_msgs/Path.h>
+#include <mav_interface_msgs/FullStateTrajectory.h>
 #include <std_msgs/Float32.h>
 #include <tf2/utils.h>
 
@@ -64,7 +66,9 @@ GlocalSystem::GlocalSystem(const ros::NodeHandle& nh,
   buildComponents(nh_private_);
 
   // ROS
-  target_pub_ = nh_.advertise<geometry_msgs::Pose>("command/pose", 10);
+  //target_pub_ = nh_.advertise<geometry_msgs::Pose>("command/pose", 10);
+  //target_pub_ = nh_.advertise<mav_interface_msgs::Path>("command/pose", 10);
+  target_pub_ = nh_.advertise<mav_interface_msgs::FullStateTrajectory>("command/pose", 10);
   odom_sub_ = nh_.subscribe("odometry", 1, &GlocalSystem::odomCallback, this);
   collision_check_timer_ = nh_.createTimer(
       collision_check_period_,
@@ -204,18 +208,65 @@ void GlocalSystem::loopIteration() {
 }
 
 void GlocalSystem::publishTargetPose() {
+  LOG(WARNING) << "Publishing target pose as odomAndTrajectory Msg.";
+  LOG(WARNING) << target_position_.x() << ", " << target_position_.y() << ", " << target_position_.z() << ", " << target_yaw_;
   // publish the target pose.
-  geometry_msgs::Pose msg;
   tf2::Quaternion q;
   q.setRPY(0, 0, target_yaw_);
-  msg.position.x = target_position_.x();
-  msg.position.y = target_position_.y();
-  msg.position.z = target_position_.z();
-  msg.orientation.x = q.x();
-  msg.orientation.y = q.y();
-  msg.orientation.z = q.z();
-  msg.orientation.w = q.w();
+  /*
+  mav_interface_msgs::Path msg;
+  msg.waypoints.emplace_back();
+  msg.waypoints.back().position.x = target_position_.x();
+  msg.waypoints.back().position.y = target_position_.y();
+  msg.waypoints.back().position.z = target_position_.z();
+  msg.waypoints.back().orientation.x = q.x();
+  msg.waypoints.back().orientation.y = q.y();
+  msg.waypoints.back().orientation.z = q.z();
+  msg.waypoints.back().orientation.w = q.w();
+  msg.waypoints.back().positionTolerance = config_.replan_position_threshold;
+  msg.waypoints.back().orientationTolerance = config_.replan_yaw_threshold;
   target_pub_.publish(msg);
+  */
+
+  mav_interface_msgs::FullStateTrajectory trajectory_msg;
+  trajectory_msg.header.stamp = ros::Time::now();
+  trajectory_msg.header.frame_id = "world";
+  trajectory_msg.initialWaypoint.position.x = current_position_.x();
+  trajectory_msg.initialWaypoint.position.y = current_position_.y();
+  trajectory_msg.initialWaypoint.position.z = current_position_.z();
+  trajectory_msg.initialWaypoint.orientation.x = current_orientation_.x();
+  trajectory_msg.initialWaypoint.orientation.y = current_orientation_.y();
+  trajectory_msg.initialWaypoint.orientation.z = current_orientation_.z();
+  trajectory_msg.initialWaypoint.orientation.w = current_orientation_.w();
+
+  // Set initial point of trajectory
+  trajectory_msg.trajectory.clear();
+  trajectory_msg.trajectory.emplace_back();
+  trajectory_msg.trajectory.back().position.x = current_position_.x();
+  trajectory_msg.trajectory.back().position.y = current_position_.y();
+  trajectory_msg.trajectory.back().position.z = current_position_.z();
+  trajectory_msg.trajectory.back().orientation.x = current_orientation_.x();
+  trajectory_msg.trajectory.back().orientation.y = current_orientation_.y();
+  trajectory_msg.trajectory.back().orientation.z = current_orientation_.z();
+  trajectory_msg.trajectory.back().orientation.w = current_orientation_.w();
+  // Set target point of trajectory
+  trajectory_msg.trajectory.emplace_back();
+  trajectory_msg.trajectory.back().position.x = target_position_.x();
+  trajectory_msg.trajectory.back().position.y = target_position_.y();
+  trajectory_msg.trajectory.back().position.z = target_position_.z();
+  trajectory_msg.trajectory.back().orientation.x = q.x();
+  trajectory_msg.trajectory.back().orientation.y = q.y();
+  trajectory_msg.trajectory.back().orientation.z = q.z();
+  trajectory_msg.trajectory.back().orientation.w = q.w();
+
+  const double dist =
+      std::sqrt(std::pow(trajectory_msg.trajectory.back().position.x - trajectory_msg.trajectory.front().position.x, 2.0)
+                + std::pow(trajectory_msg.trajectory.back().position.y - trajectory_msg.trajectory.front().position.y, 2.0)
+                + std::pow(trajectory_msg.trajectory.back().position.z - trajectory_msg.trajectory.front().position.z, 2.0));
+  trajectory_msg.trajectory.front().timestampNanoSeconds = 0;
+  trajectory_msg.trajectory.back().timestampNanoSeconds = dist / 0.5 * 1e9;
+  trajectory_msg.header.stamp = ros::Time::now();
+  target_pub_.publish(trajectory_msg);
 
   // Update the tracking state.
   comm_->setTargetReached(false);
