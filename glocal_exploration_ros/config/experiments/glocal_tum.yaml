@@ -4,9 +4,9 @@
 voxel_size: &voxel_size 0.2
 voxels_per_side: &voxels_per_side 16
 truncation_distance: &truncation_distance 0.6
-traversability_radius_local_planner: &traversability_radius_local_planner 1.1
-traversability_radius_global_planner: &traversability_radius_global_planner 1.1
-traversability_radius_path_following: &traversability_radius_path_following 1.0
+traversability_radius_local_planner: &traversability_radius_local_planner 0.6
+traversability_radius_global_planner: &traversability_radius_global_planner 0.6
+traversability_radius_path_following: &traversability_radius_path_following 0.5
 max_ray_length: &max_ray_length 10
 
 # General params
@@ -14,16 +14,16 @@ verbosity: 4
 replan_position_threshold: 0.3  # m, use higher values to compensate drift
 replan_yaw_threshold: 5   # deg
 replan_timeout_constant: 2.0  # turn down to compensate drift more quickly
-replan_timeout_velocity: 1.0
+replan_timeout_velocity: 0.5
 
 region_of_interest:
   type: bounding_box
   x_min: -20
-  x_max: 20
+  x_max: 25
   y_min: -20
   y_max: 20
-  z_min: -1.5
-  z_max: 1.5
+  z_min: 0.0
+  z_max: 10.0
 
 mapping:
   type: voxgraph
@@ -58,7 +58,7 @@ mapping:
   # Integrator settings projective integrator
   sensor_horizontal_resolution: 200
   sensor_vertical_resolution: 32
-  sensor_vertical_field_of_view_degrees: 45
+  sensor_vertical_field_of_view_degrees: 90
   integrator_threads: 4
   use_missing_points_for_clearing: true
   # Integrator settings temporal window (for compatibility with voxgraph)
@@ -85,7 +85,7 @@ mapping:
   input_odom_frame: "depot"
   input_base_link_frame: "gt_body"
   output_odom_frame: "depot"
-  output_base_link_frame: "drone_corrected"
+  output_base_link_frame: "gt_body"
   output_sensor_frame: "lidar_corrected"
   tsdf_integrator:
     truncation_distance: *truncation_distance
@@ -147,7 +147,7 @@ local_planner:
   
   # Lidar Model
   ray_length: *max_ray_length  # m
-  vertical_fov: 45  # deg
+  vertical_fov: 90  # deg
   horizontal_fov: 360 # deg
   vertical_resolution: 1000 # 64 / 32
   horizontal_resolution: 10000 # 1024 / 200
