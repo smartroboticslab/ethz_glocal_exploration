@@ -7,6 +7,7 @@
     <arg name="show_rviz"
          default="true"
          doc="Automatically launch Rviz."/>
+    <arg name="rosbag_dir" default="/tmp"/>
 
    <!-- The name of the world to use for simulation. -->
    <arg name="world" default="depot"/>
@@ -153,6 +154,11 @@
         </node>
     </group-->
 
+  <node pkg="rosbag"
+        type="record"
+        name="rosbag_record"
+        args="record -O $(arg rosbag_dir)/iros2024_glocal_exploration /rmf_owl/odom /rmf_owl/lidar/points /okvis_node/okvis_odometry /okvis_node/okvis_odometry_aligned"
+        required="true"/>
 
     <!-- Visualization -->
     <group if="$(arg show_rviz)">
