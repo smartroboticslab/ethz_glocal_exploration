@@ -111,7 +111,7 @@
     <group ns="glocal">
         <node name="glocal_system" pkg="glocal_exploration_ros"
               type="glocal_system_node"
-              output="screen" launch-prefix="$(arg launch_prefix)">
+              output="screen" launch-prefix="$(arg launch_prefix)" required="true">
             <rosparam command="load"
                       file="$(find glocal_exploration_ros)/config/$(arg planner_config)"/>
             <remap from="~pointcloud" to="/$(arg mav_name)/lidar/points"/>
