@@ -11,7 +11,7 @@
 
    <!-- The name of the world to use for simulation. -->
    <arg name="world" default="depot"/>
-   <arg name="gui" default="true"/>
+   <arg name="gui" default="false"/>
    <arg name="mav_name" default="rmf_owl"/>
 
     <!-- Planner arguments -->
