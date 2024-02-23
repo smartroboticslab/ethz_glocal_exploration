@@ -52,9 +52,9 @@
        <param name="trajectory_velocity" type="double" value="0.5"/>
        <param name="maximum_yaw_rate" type="double" value="0.5"/>
        <param name="planning_time" type="double" value="1.0"/>
-       <param name="csv_path" type="string" value="/home/wiss/barba/ICRA24_res"/>
-       <param name="config_filename" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_okvis.yaml"/>
-       <param name="submapping_config_filename" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_mapping.yaml"/>
+       <param name="csv_path" type="string" value="/tmp/"/>
+       <param name="config_filename" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_okvis_eth.yaml"/>
+       <param name="submapping_config_filename" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_mapping_eth.yaml"/>
       <remap from="/cam0/image_raw"            to="/rmf_owl/cam0/image_raw"/>
       <remap from="/cam1/image_raw"            to="/rmf_owl/cam1/image_raw"/>
       <remap from="/imu0"                      to="/rmf_owl/okvis_imu0"/>
