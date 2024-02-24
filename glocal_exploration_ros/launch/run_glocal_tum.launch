@@ -8,6 +8,8 @@
          default="true"
          doc="Automatically launch Rviz."/>
     <arg name="rosbag_dir" default="/tmp"/>
+    <!-- Stop the simulation after timeout minutes if rviz is false. -->
+    <arg name="timeout" default="15"/>
 
    <!-- The name of the world to use for simulation. -->
    <arg name="world" default="depot"/>
@@ -61,6 +63,11 @@
       <remap from="/imu0"                      to="/rmf_owl/okvis_imu0"/>
     </node>
     <node pkg="srl_navigation" type= "okvis_world_align.py" name="okvis_world_align" required="true" output="screen"/>
+
+    <!-- Start Exploration Node-->
+    <node pkg="srl_navigation" type="start_exploration_node.py" name="start_exploration_node" output="screen">
+      <param name="method" value="glocal"/>
+    </node>
 
     <!-- Experiment arguments -->
     <arg name="record_data" default="false"/>
@@ -166,4 +173,16 @@
              default="$(find glocal_exploration_ros)/config/visualization/glocal.rviz"/>
         <node type="rviz" name="rviz" pkg="rviz" args="-d $(arg rviz_file)"/>
     </group>
+
+    <!-- Start the simulation run manager only if rviz isn't running. -->
+    <node pkg="srl_navigation"
+          type="run_manager_node.py"
+          name="run_manager"
+          output="screen"
+          required="true"
+          unless="$(arg show_rviz)">
+      <param name="timeout" value="$(arg timeout)"/>
+      <param name="method" value="glocal"/>
+      <param name="output_dir" value="$(arg rosbag_dir)"/>
+    </node>
 </launch>
