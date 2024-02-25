@@ -1,7 +1,7 @@
 # Config for the Glocal System.
 
 # Global (shared) parameters:
-voxel_size: &voxel_size 0.2
+voxel_size: &voxel_size 0.1
 voxels_per_side: &voxels_per_side 16
 truncation_distance: &truncation_distance 0.6
 traversability_radius_local_planner: &traversability_radius_local_planner 0.6
@@ -151,7 +151,7 @@ local_planner:
   horizontal_fov: 360 # deg
   vertical_resolution: 1000 # 64 / 32
   horizontal_resolution: 10000 # 1024 / 200
-  ray_step: 0.4 # m
+  ray_step: 0.2 # m
   downsampling_factor: 3
   num_yaw_samples: 4
   T_baselink_sensor:  # 15 deg pitch
