@@ -130,7 +130,7 @@
                    to="~/mapping/submap_esdfs"/>
             <remap from="~/global_planner/submap_pose_in"
                    to="~/mapping/submap_poses"/>
-            <remap from="~/loop_closure_input" to="/okvis_node/okvis_loop_closures"/>
+            <remap from="~/loop_closure_input" to="/disable/okvis_node/okvis_loop_closures"/>
         </node>
     </group>
 <!--
