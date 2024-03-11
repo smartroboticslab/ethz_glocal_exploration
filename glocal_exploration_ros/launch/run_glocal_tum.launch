@@ -40,12 +40,13 @@
     <param name="config_file_autopilot" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_mpc.yaml"/>
     <node pkg="mpc_ros" type= "odom2odomAndTrajectory.py" name="odom2odomAndTrajectory" required="true" output="screen"/>
     <node pkg="mpc_ros" type= "mpc_node" name="mpc_node" required="true" output="screen">
-      <!--<remap from="/mavros/odometry/data" to="/$(arg mav_name)/odom_and_trajectory"/>-->
-      <remap from="/mavros/odometry/data" to="/okvis_node/odom_and_trajectory_aligned"/>
+      <remap from="/mavros/odometry/data" to="/$(arg mav_name)/odom_and_trajectory"/>
+      <!--remap from="/mavros/odometry/data" to="/okvis_node/odom_and_trajectory_aligned"/-->
       <remap from="/autopilot/trajectory" to="/$(arg mav_name)/command/pose"/>
     </node>
 
     <!-- Run also OKVIS (without submapping + alignment as this should be handled by Voxgraph) in the loop -->
+    <!--
     <node pkg="srl_navigation" type="okvis_navigation_node" name="okvis_node" required="true" output="screen">
       <env name="OMP_NUM_THREADS" value="3"/>
        <param name="autonomous_flight" value="true"/>
@@ -63,7 +64,7 @@
       <remap from="/imu0"                      to="/rmf_owl/okvis_imu0"/>
     </node>
     <node pkg="srl_navigation" type= "okvis_world_align.py" name="okvis_world_align" required="true" output="screen"/>
-
+-->
     <!-- Start Exploration Node-->
     <node pkg="srl_navigation" type="start_exploration_node.py" name="start_exploration_node" output="screen">
       <param name="method" value="glocal"/>
@@ -123,8 +124,8 @@
             <rosparam command="load"
                       file="$(find glocal_exploration_ros)/config/$(arg planner_config)"/>
             <remap from="~pointcloud" to="/$(arg mav_name)/lidar/points"/>
-            <!--remap from="odometry" to="/$(arg mav_name)/odom"/-->
-            <remap from="odometry" to="/okvis_node/okvis_odometry_aligned"/>
+            <remap from="odometry" to="/$(arg mav_name)/odom"/>
+            <!--remap from="odometry" to="/okvis_node/okvis_odometry_aligned"/-->
             <remap from="command/pose" to="/$(arg mav_name)/command/pose"/>
             <remap from="~/global_planner/submap_in"
                    to="~/mapping/submap_esdfs"/>
