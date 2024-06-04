@@ -58,13 +58,14 @@ class GlocalSystem {
 
   // Subscribers and publishers.
   ros::Subscriber odom_sub_;
+  ros::Subscriber goal_sub_;
   ros::Publisher target_pub_;
   ros::Publisher total_planning_cpu_time_pub_;
   ros::ServiceServer run_srv_;
 
   // Components.
   const Config config_;
-  std::shared_ptr<Communicator> comm_;
+  std::shared_ptr<Communicator> comm_; //In comm, we can set there the next waypoint. If we add there a point via a subscriber, then we could override the exploration code. 
   std::shared_ptr<LocalPlannerVisualizerBase> local_planner_visualizer_;
   std::shared_ptr<GlobalPlannerVisualizerBase> global_planner_visualizer_;
 
