@@ -35,7 +35,7 @@
 
     <!-- Linear MPC using trajectory anchoring interface -->
     <!-- Take-off automatically -->
-    <include file="$(find srl_sim_util)/launch/px4_arm_offboard.launch"/>
+    <!--<include file="$(find srl_sim_util)/launch/px4_arm_offboard.launch"/>-->
 
     <param name="config_file_autopilot" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_mpc.yaml"/>
     <node pkg="mpc_ros" type= "odom2odomAndTrajectory.py" name="odom2odomAndTrajectory" required="true" output="screen"/>
@@ -46,18 +46,19 @@
     </node>
 
     <!-- Run also OKVIS (without submapping + alignment as this should be handled by Voxgraph) in the loop -->
-    <node pkg="srl_navigation" type="okvis_navigation_node" name="okvis_node" required="true" output="screen">
+    <node pkg="srl_navigation" type="okvis_navigation_subscriber_w_stereo_depth" name="okvis_node" required="true" output="screen">
       <env name="OMP_NUM_THREADS" value="3"/>
        <param name="autonomous_flight" value="true"/>
        <param name="mesh_cutoff_z" type="double" value="8.0"/>
        <param name="frontier_cutoff_z" type="double" value="8.0"/>
        <param name="submap_path" value="/tmp"/>
-       <param name="trajectory_velocity" type="double" value="0.5"/>
+       <param name="trajectory_velocity" type="double" value="3.0"/>
        <param name="maximum_yaw_rate" type="double" value="0.5"/>
        <param name="planning_time" type="double" value="1.0"/>
        <param name="csv_path" type="string" value="/tmp/"/>
+       <param name="save_submap_meshes" type="bool" value="false"/>
        <param name="config_filename" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_okvis_eth.yaml"/>
-       <param name="submapping_config_filename" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_mapping_eth.yaml"/>
+       <param name="submapping_config_filename" value="$(find srl_sim_gazebo_ignition)/config/rmf_owl_mapping_nn.yaml"/>
       <remap from="/cam0/image_raw"            to="/rmf_owl/cam0/image_raw"/>
       <remap from="/cam1/image_raw"            to="/rmf_owl/cam1/image_raw"/>
       <remap from="/imu0"                      to="/rmf_owl/okvis_imu0"/>
@@ -65,9 +66,9 @@
     <node pkg="srl_navigation" type= "okvis_world_align.py" name="okvis_world_align" required="true" output="screen"/>
 
     <!-- Start Exploration Node-->
-    <node pkg="srl_navigation" type="start_exploration_node.py" name="start_exploration_node" output="screen">
+    <!--<node pkg="srl_navigation" type="start_exploration_node.py" name="start_exploration_node" output="screen">
       <param name="method" value="glocal"/>
-    </node>
+    </node>-->
 
     <!-- Experiment arguments -->
     <arg name="record_data" default="false"/>
@@ -92,7 +93,7 @@
     <!-- tf -->
     <node pkg="tf" type="static_transform_publisher"
           name="static_tf_depot_odom"
-          args="0 0 0 0 0 0 1 /odom /depot 100"/>
+          args="0 0 0 0 0 0 1 /odom /forest2 100"/>
 
     <node pkg="tf" type="static_transform_publisher"
               name="static_tf_odom_map"
@@ -119,10 +120,10 @@
     <group ns="glocal">
         <node name="glocal_system" pkg="glocal_exploration_ros"
               type="glocal_system_node"
-              output="screen" launch-prefix="$(arg launch_prefix)" required="true">
+              output="screen" launch-prefix="$(arg launch_prefix)" required="false">
             <rosparam command="load"
                       file="$(find glocal_exploration_ros)/config/$(arg planner_config)"/>
-            <remap from="~pointcloud" to="/$(arg mav_name)/lidar/points"/>
+            <remap from="~pointcloud" to="/my_pcl_topic"/>
             <!--remap from="odometry" to="/$(arg mav_name)/odom"/-->
             <remap from="odometry" to="/okvis_node/okvis_odometry_aligned"/>
             <remap from="command/pose" to="/$(arg mav_name)/command/pose"/>
@@ -133,6 +134,11 @@
             <remap from="~/loop_closure_input" to="/disable/okvis_node/okvis_loop_closures"/>
         </node>
     </group>
+
+  <node pkg="srl_navigation" type="simulator_commands.py" name="sim_autopilot" output="screen" required="false">
+    <param name="heightmap_path"   type="string" value="$(find srl_sim_gazebo_ignition)/resources/models/forest/materials/textures/heightmap.png"/>
+    <param name="plan_time" type="double" value="$(arg plan_time)"/>
+  </node>
 <!--
     <arg name="target_directory" default="/storage/local/boche/glocal/"/>
     <arg name="evaluate" default="true"/>
@@ -161,11 +167,11 @@
         </node>
     </group-->
 
-  <node pkg="rosbag"
+  <!--<node pkg="rosbag"
         type="record"
         name="rosbag_record"
         args="record -O $(arg rosbag_dir)/iros2024_glocal_exploration /rmf_owl/odom /rmf_owl/lidar/points /okvis_node/okvis_odometry /okvis_node/okvis_odometry_aligned"
-        required="true"/>
+        required="true"/>-->
 
     <!-- Visualization -->
     <group if="$(arg show_rviz)">

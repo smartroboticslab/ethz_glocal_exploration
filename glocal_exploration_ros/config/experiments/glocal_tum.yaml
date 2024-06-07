@@ -82,9 +82,9 @@ mapping:
   loop_closure_topic_queue_length: 1000
   submap_topic_queue_length: 10
   publisher_queue_length: 10
-  input_odom_frame: "depot"
+  input_odom_frame: "forest2"
   input_base_link_frame: "gt_body"
-  output_odom_frame: "depot"
+  output_odom_frame: "forest2"
   output_base_link_frame: "gt_body"
   output_sensor_frame: "lidar_corrected"
   tsdf_integrator:
@@ -147,18 +147,19 @@ local_planner:
   
   # Lidar Model
   ray_length: *max_ray_length  # m
-  vertical_fov: 90  # deg
+  vertical_fov: 63.1365417 #90  # deg
   horizontal_fov: 360 # deg
-  vertical_resolution: 1000 # 64 / 32
-  horizontal_resolution: 10000 # 1024 / 200
+  vertical_resolution: 480 #1000 # 64 / 32
+  horizontal_resolution: 2930 #10000 # 1024 / 200
   ray_step: 0.2 # m
-  downsampling_factor: 3
+  downsampling_factor: 1
   num_yaw_samples: 4
   T_baselink_sensor:  # 15 deg pitch
-   - [1.0000000,  0.0000000,  0.0000000, 0.0]
-   - [0.0000000,  1.0000000,  0.0000000, 0.0]
-   - [0.0000000,  0.0000000,  1.0000000, 0.05]
-   - [0.0,        0.0,        0.0,       1.0]
+   - [ 1.     ,  0.     ,  0.     ,  0.]
+   - [ 0.     ,  1.     ,  0.     ,  0.]
+   - [ 0.     ,  0.     ,  1.     ,  0.]
+   - [ 0.     ,  0.     ,  0.     ,  1.]
+
    
   # Visualization
   visualize_tree: true
