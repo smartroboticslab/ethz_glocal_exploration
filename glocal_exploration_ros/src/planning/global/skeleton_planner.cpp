@@ -113,13 +113,13 @@ void SkeletonPlanner::executePlanningIteration() {
 
   if (stage_ == Stage::k1ComputeFrontiers) {
     // Compute and update all frontiers to current state.
-    if (computeFrontiers()) {
+    if (computeFrontiers()) { //Change
       stage_ = Stage::k2ComputeGoalAndPath;
     }
   }
   if (stage_ == Stage::k2ComputeGoalAndPath) {
     // Select a frontier to move towards, including path generation.
-    if (computeGoalPoint()) {
+    if (computeGoalPoint()) { //Change here
       stage_ = Stage::k3ExecutePath;
     }
   }
@@ -183,6 +183,7 @@ bool SkeletonPlanner::computeGoalPoint() {
 
   // Get all frontiers.
   frontier_data_.clear();
+  //Here, we will only have one frontier, the planned path. 
   for (const auto& frontier : getActiveFrontiers()) {
     FrontierSearchData& data = frontier_data_.emplace_back();
     // Compute centroids and number of points.
@@ -250,7 +251,7 @@ bool SkeletonPlanner::computeGoalPoint() {
         path_counter++;
         std::vector<RelativeWayPoint> way_points;
         bool frontier_is_observable = false;
-        if (computePathToFrontier(start_point, start_vertex_candidates,
+        if (computePathToFrontier(start_point, start_vertex_candidates, //Sebastian hijack here
                                   candidate.centroid, candidate.frontier_points,
                                   &way_points, &frontier_is_observable)) {
           // Frontier is reachable, save path and compute path length.
@@ -432,7 +433,7 @@ void SkeletonPlanner::clusterFrontiers() {
       << frontier_data_.size() << ").";
 }
 
-void SkeletonPlanner::executeWayPoint() {
+void SkeletonPlanner::executeWayPoint() { //Sebastian
   if (comm_->targetIsReached()) {
     if (way_points_.empty()) {
       // Finished execution.
@@ -450,7 +451,7 @@ void SkeletonPlanner::executeWayPoint() {
       }
 
       // Send the next waypoint in the list.
-      auto way_point = static_cast<WayPoint>(way_points_[0]);
+      auto way_point = static_cast<WayPoint>(way_points_[0]); //Here is populating the path
       way_point.yaw = std::atan2(
           (way_point.position.y() - comm_->currentPose().position.y()),
           (way_point.position.x() - comm_->currentPose().position.x()));

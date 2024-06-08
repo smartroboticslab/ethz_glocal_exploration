@@ -122,7 +122,7 @@ void RHRRTStar::executePlanningIteration() {
     // Select the next point to go to from local planning.
     updateCollision();
     WayPoint next_waypoint;
-    if (selectNextBestWayPoint(&next_waypoint)) {
+    if (selectNextBestWayPoint(&next_waypoint)) { //Sebastian
       comm_->requestWayPoint(next_waypoint);
       gain_update_needed_ = true;
     }
