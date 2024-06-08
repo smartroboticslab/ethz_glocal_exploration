@@ -49,6 +49,7 @@ class Communicator {
   void requestWayPoint(const WayPoint& way_point);
   const WayPoint& getRequestedWayPoint() { return target_way_point_; }
   const WayPoint& getPreviousWayPoint() { return previous_target_way_point_; }
+  const WayPoint& goalPose() const {return goal_pose_;}
 
   // interface for the main node to manage the state
   void setTargetReached(bool target_reached) {
@@ -56,6 +57,7 @@ class Communicator {
   }
   void setCurrentPose(const WayPoint& pose) { current_pose_ = pose; }
   void setRequestedWayPointRead() { new_waypoint_requested_ = false; }
+  void setGoalPose(const WayPoint& pose) { goal_pose_ = pose; }
 
   // setup tools for the main node
   void setupStateMachine(std::shared_ptr<StateMachine> state_machine);
@@ -77,6 +79,7 @@ class Communicator {
   WayPoint current_pose_;
   WayPoint target_way_point_;
   WayPoint previous_target_way_point_;
+  WayPoint goal_pose_;
   bool new_waypoint_requested_;
 };
 

@@ -70,6 +70,7 @@ GlocalSystem::GlocalSystem(const ros::NodeHandle& nh,
   //target_pub_ = nh_.advertise<mav_interface_msgs::Path>("command/pose", 10);
   target_pub_ = nh_.advertise<mav_interface_msgs::FullStateTrajectory>("command/pose", 10);
   odom_sub_ = nh_.subscribe("odometry", 1, &GlocalSystem::odomCallback, this);
+  goal_sub_ = nh_.subscribe("goal_position", 1, &GlocalSystem::goalCallback, this);
   collision_check_timer_ = nh_.createTimer(
       collision_check_period_,
       std::bind(&GlocalSystem::performCollisionAvoidance, this));
@@ -77,6 +78,17 @@ GlocalSystem::GlocalSystem(const ros::NodeHandle& nh,
       nh_.advertise<std_msgs::Float32>("total_planning_cpu_time", 1);
   collision_avoidance_pub_ = nh_private_.advertise<geometry_msgs::PointStamped>(
       "collision_avoidance", 1);
+}
+
+void GlocalSystem::goalCallback(const geometry_msgs::Transform msg){
+  WayPoint goal_position;
+  goal_position.position = Point(msg.translation.x, msg.translation.y,
+                            msg.translation.z);
+
+  // update the state machine with the current pose.
+  goal_position.yaw = tf2::getYaw(msg.rotation);
+  comm_->setGoalPose(goal_position);
+  return;
 }
 
 void GlocalSystem::buildComponents(const ros::NodeHandle& nh) {

@@ -77,11 +77,17 @@ RHRRTStar::RHRRTStar(const Config& config,
   LOG_IF(INFO, config_.verbosity >= 1) << "\n" + config_.toString();
 }
 
+void RHRRTStar::setGoalPose(const WayPoint& goal_position) {
+  goal_pose_ = goal_pose_;
+}
+
 void RHRRTStar::executePlanningIteration() {
   // Newly started local planning.
   if (comm_->stateMachine()->previousState() !=
       StateMachine::State::kLocalPlanning) {
+    //Here I can set where the planner has to go!
     resetPlanner(comm_->currentPose());
+    setGoalPose(comm_->goalPose());
     comm_->stateMachine()->signalLocalPlanning();
   }
 
@@ -192,7 +198,7 @@ void RHRRTStar::expandTree() {
   }
 
   // evaluate the gain of the point
-  evaluateViewPoint(new_point.get());
+  evaluateViewPoint(new_point.get()); //Sebastián This is where I will have to bias it to reach to the target point. 
 
   // Add it to the kdtree
   tree_data_.points.push_back(std::move(new_point));
@@ -515,10 +521,14 @@ bool RHRRTStar::selectBestConnection(ViewPoint* view_point) {
 }
 
 void RHRRTStar::evaluateViewPoint(ViewPoint* view_point) {
+  //Sebastian, the gain should be set with the distance to the point. Shorter distance, better
+  /*
   voxblox::LongIndexSet voxels;
   sensor_model_->getVisibleUnknownVoxelsAndOptimalYaw(&view_point->pose,
                                                       &voxels);
   view_point->gain = voxels.size();
+  */
+  view_point->gain = cos(goal_pose_.yaw - view_point->pose.yaw) * 1 / ((view_point->pose.position - goal_pose_.position).norm() + 0.00001);
 }
 
 FloatingPoint RHRRTStar::computeCost(const Connection& connection) {

@@ -4,6 +4,7 @@
 #include <memory>
 
 #include <nav_msgs/Odometry.h>
+#include <geometry_msgs/Transform.h>
 #include <ros/ros.h>
 #include <std_srvs/SetBool.h>
 
@@ -48,6 +49,7 @@ class GlocalSystem {
   void odomCallback(const nav_msgs::Odometry& msg);
   bool runSrvCallback(std_srvs::SetBool::Request& req,    // NOLINT
                       std_srvs::SetBool::Response& res);  // NOLINT
+  void goalCallback(const geometry_msgs::Transform msg);
 
   // Spinning is managed explicitly, run this to start the planner.
   void mainLoop();

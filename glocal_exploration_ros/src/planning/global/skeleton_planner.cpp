@@ -183,7 +183,9 @@ bool SkeletonPlanner::computeGoalPoint() {
 
   // Get all frontiers.
   frontier_data_.clear();
+
   //Here, we will only have one frontier, the planned path. 
+  /*
   for (const auto& frontier : getActiveFrontiers()) {
     FrontierSearchData& data = frontier_data_.emplace_back();
     // Compute centroids and number of points.
@@ -195,6 +197,11 @@ bool SkeletonPlanner::computeGoalPoint() {
     // NOTE(schmluk): Currently copy the frontiers since it's not that many.
     data.frontier_points = frontier;
   }
+  */
+  FrontierSearchData& data = frontier_data_.emplace_back();
+  data.centroid = comm_->goalPose().position;
+  data.num_points = 1;
+
   if (frontier_data_.empty()) {
     LOG(WARNING) << "No active frontiers found to compute goal points from.";
     vis_data_.execution_finished = true;

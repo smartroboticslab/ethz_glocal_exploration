@@ -170,6 +170,7 @@ class RHRRTStar : public LocalPlannerBase {
   static FloatingPoint computeGNVStep(ViewPoint* view_point, FloatingPoint gain,
                                       FloatingPoint cost,
                                       std::unordered_set<ViewPoint*>* visited);
+  void setGoalPose(const WayPoint& goal_position);
 
   // updating.
   void updateCollision();
@@ -188,6 +189,8 @@ class RHRRTStar : public LocalPlannerBase {
   Connection* current_connection_;  // the connection currently being executed.
   bool reconsidered_;               // true: reverse/switch to global anyways.
   int number_of_executed_waypoints_;
+
+  WayPoint goal_pose_; //Modification to accept goal positions
 
   // stats
   int pruned_points_;
